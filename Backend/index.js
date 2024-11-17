@@ -11,9 +11,16 @@ const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
+const allowedOrigins = ["http://148.135.136.178", "http://taapmaan.live"];
 // Allow requests from your frontend
 app.use(cors({
-  origin: "http://148.135.136.178",
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
   methods: ["GET", "POST"],
   credentials: true,
 }));
