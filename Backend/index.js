@@ -35,6 +35,11 @@ app.get("/", (req, res) => {
   res.send("Backend is up!");
 });
 
+app.get('/api/get-google-api-key', (req, res) => {
+  res.json({ apiKey: process.env.GOOGLE_API_KEY });
+});
+
+
 // Registration Route with Validation and Password Hashing
 app.post("/signup", async (req, res) => {
   const { name, email, phone, password } = req.body;
