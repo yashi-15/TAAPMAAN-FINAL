@@ -11,7 +11,7 @@ const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
-const allowedOrigins = ["http://148.135.136.178", "http://taapmaan.live"];
+const allowedOrigins = ["http://148.135.136.178", "https://148.135.136.178", "http://taapmaan.live", "https://taapmaan.live"];
 // Allow requests from your frontend
 app.use(cors({
   origin: (origin, callback) => {
