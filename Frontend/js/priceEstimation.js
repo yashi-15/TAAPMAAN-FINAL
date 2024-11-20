@@ -13,7 +13,6 @@ async function calculateEstimatedPrice(vehicle, pickup, drop, weightrange) {
             basePrice = calculatePriceByWeight(distanceinfo, vehicleType, weightrange);
         } else {
             const distance = await calculateDistance(pickupLocation.geometry.location, dropLocation.geometry.location);
-            console.log(distance)
             if (distance <= 600) {
                 distanceinfo = "lessThan600Km";
                 basePrice = calculatePriceByWeight(distanceinfo, vehicleType, weightrange);
@@ -139,9 +138,7 @@ function calculateDistance(pickupLocation, dropLocation) {
             (response, status) => {
                 if (status === "OK") {
                     const distanceText = response.rows[0].elements[0].distance.text;
-                    console.log(distanceText)
                     const distance = parseFloat(distanceText.replace(/,/g, "").replace(" km", ""));
-                    console.log(distance)
                     resolve(distance);
                 } else {
                     reject(`Error calculating distance: ${status}`);

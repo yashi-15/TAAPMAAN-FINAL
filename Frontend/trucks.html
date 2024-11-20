@@ -7,7 +7,7 @@
         <meta content="Free HTML Templates" name="keywords" />
         <meta content="Free HTML Templates" name="description" />
         <!-- Include your CSS and JavaScript libraries -->
-         
+
         <!-- Favicon -->
         <link href="img/favicon.ico" rel="icon" />
 
@@ -16,17 +16,17 @@
         <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik&display=swap" rel="stylesheet" />
 
         <script>
-            fetch('https://api.taapmaan.live/api/get-google-api-key')
-                .then(response => response.json())
-                .then(data => {
+            fetch("https://api.taapmaan.live/api/get-google-api-key")
+                .then((response) => response.json())
+                .then((data) => {
                     const apiKey = data.apiKey;
-                    const script = document.createElement('script');
+                    const script = document.createElement("script");
                     script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places&callback=fetchAvailableTrucks`;
                     script.async = true;
                     script.defer = true;
                     document.head.appendChild(script);
                 })
-                .catch(error => {
+                .catch((error) => {
                     console.error("Error fetching API key:", error);
                 });
         </script>
@@ -169,9 +169,9 @@
                         <!-- https://docs.google.com/forms/d/e/1FAIpQLSciUs5rnk0JtcReAfl8jeYXZmk-tINfyioYc-1Z3SVwCbk6kQ/viewform?usp=pp_url&entry.971733700=name&entry.338509281=phone&entry.1178663220=weight&entry.1400587036=price&entry.74539831=pickup&entry.1797661727=drop&entry.860171057=date&entry.1674096571=type+vehicle&entry.495744575=quantity+product&entry.860091518=type+product -->
                         <form action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSciUs5rnk0JtcReAfl8jeYXZmk-tINfyioYc-1Z3SVwCbk6kQ/formResponse" method="post" target="hidden_iframe3" onsubmit="return vehicleModalSubmit()">
                             <div class="row justify-content-center align-items-center">
-                                <input id="yourName" name="entry.971733700" type="text" class="col-5 form-control p-3 m-2" placeholder="Name" required />
-                                <input id="yourPhonenumber" name="entry.338509281" type="text" class="col-5 form-control p-3 m-2" placeholder="Phone No." required />
-                                <input id="exactWeight" name="entry.1178663220" type="text" class="col-8 form-control p-3 m-2" placeholder="Exact Weight" required />Kg
+                                <input id="yourName" name="entry.971733700" type="text" class="col-5 form-control p-3 m-2" placeholder="Name" />
+                                <input id="yourPhonenumber" name="entry.338509281" type="text" class="col-5 form-control p-3 m-2" placeholder="Phone No." />
+                                <input id="exactWeight" name="entry.1178663220" type="hidden" class="col-8 form-control p-3 m-2" placeholder="Exact Weight" required />
                             </div>
                             <hr />
 
@@ -179,6 +179,14 @@
                                 <p class="col-11"><strong>Vehicle Name:</strong> <span id="modalVehicleName"></span></p>
                                 <p class="col-11"><strong>Temperature Range:</strong> <span id="modalTempRange"></span></p>
                                 <p class="col-11"><strong>Price:</strong> <span id="modalEstimatedPrice"></span></p>
+                                <div class="col-11 d-flex align-items-center">
+                                    <a id="decreaseButton" class="m-1 p-2 rounded-lg bg-Frozen text-decoration-none font-weight-bold">-</a>
+                                    <input type="range" class="custom-range" id="customRange3" style="flex: 1" step="1" />
+                                    <a id="increaseButton" class="m-1 p-2 rounded-lg bg-Frozen text-decoration-none font-weight-bold">+</a>
+                                </div>
+                                <div class="col-11 text-center">
+                                    <h6><span id="rangeValue">0</span> Kg</h6>
+                                </div>
                                 <input id="modal-price" name="entry.1400587036" type="text" class="form-control p-3 m-2 rounded-pill col-11" hidden />
                                 <input id="modal-pickup-location" name="entry.74539831" type="text" class="form-control p-3 m-2 rounded-pill col-11" readonly />
                                 <input id="modal-drop-location" name="entry.1797661727" type="text" class="form-control p-3 m-2 rounded-pill col-11" readonly />
@@ -293,9 +301,35 @@
                     // Get references to modal fields
                     const modalVehicleName = document.getElementById("modalVehicleName");
                     const modalTempRange = document.getElementById("modalTempRange");
-                    // const modalCapacity = document.getElementById("modalCapacity");
                     const modalEstimatedPrice = document.getElementById("modalEstimatedPrice");
                     const inputField = document.querySelector("#modal-price");
+
+                    const exactWeight = document.getElementById("exactWeight");
+                    const rangeInput = document.getElementById("customRange3");
+                    const rangeValue = document.getElementById("rangeValue");
+                    const decreaseButton = document.getElementById("decreaseButton");
+                    const increaseButton = document.getElementById("increaseButton");
+
+                    // Extract min and max values from the quantityProduct string
+                    const [minValue, maxValue] = quantityProduct.split("-").map(Number);
+
+                    // Set the slider's min, max, and default value
+                    rangeInput.min = minValue;
+                    rangeInput.max = maxValue;
+                    rangeInput.value = minValue; // Start at minimum value
+                    rangeValue.textContent = minValue; // Display the initial value
+                    exactWeight.value = minValue; // Display the initial value
+                    
+
+                    // Function to calculate and display the price
+                    async function updateEstimatedPrice(vehicle, pickupLocation, dropLocation) {
+                        const weight = parseFloat(rangeInput.value);
+
+                        const { pricePerKg, estimatedPriceRange } = await calculateEstimatedPrice(vehicle, pickupLocation, dropLocation, quantityProduct);
+                        modalEstimatedPrice.textContent = `₹ ${pricePerKg * weight}`;
+                        console.log(inputField.value);
+                        inputField.value = modalEstimatedPrice.textContent;
+                    }
 
                     // Event delegation to handle "Book Now" clicks
                     vehicleResults.addEventListener("click", (e) => {
@@ -306,23 +340,31 @@
                             // Populate modal with vehicle data
                             modalVehicleName.textContent = `${vehicle.vehicleName} (${vehicle.capacity}Kg)`;
                             modalTempRange.textContent = `${vehicle.tempRange}`;
-                            // modalCapacity.textContent = `${vehicle.capacity} Kg (${vehicle.size})`;
-                            // Populate the modal with the estimated price data
-                            modalEstimatedPrice.textContent = "Enter a valid weight";
+                            updateEstimatedPrice(vehicle, pickupLocation, dropLocation);
 
-                            document.getElementById("exactWeight").addEventListener("input", async function (e) {
-                                const weight = parseFloat(e.target.value);
+                            // Update price when slider value changes
+                            rangeInput.addEventListener("input", () => {
+                                rangeValue.textContent = rangeInput.value;
+                                exactWeight.value = rangeInput.value;
+                                updateEstimatedPrice(vehicle, pickupLocation, dropLocation);
+                            });
 
-                                if (isNaN(weight) || weight <= 0) {
-                                    // If invalid weight, show a message or clear the price
-                                    modalEstimatedPrice.textContent = "Enter a valid weight";
-                                    return;
-                                }
+                            // Update price when '-' button is clicked
+                            decreaseButton.addEventListener("click", () => {
+                                const newValue = Math.max(Number(rangeInput.value) - 1, minValue);
+                                rangeInput.value = newValue;
+                                rangeValue.textContent = newValue;
+                                exactWeight.value = newValue;
+                                updateEstimatedPrice(vehicle, pickupLocation, dropLocation);
+                            });
 
-                                const { pricePerKg, estimatedPriceRange } = await calculateEstimatedPrice(vehicle, pickupLocation, dropLocation, quantityProduct);
-                                modalEstimatedPrice.textContent = `₹ ${pricePerKg * weight} `;
-                                inputField.value = modalEstimatedPrice.textContent;
-                             
+                            // Update price when '+' button is clicked
+                            increaseButton.addEventListener("click", () => {
+                                const newValue = Math.min(Number(rangeInput.value) + 1, maxValue);
+                                rangeInput.value = newValue;
+                                rangeValue.textContent = newValue;
+                                exactWeight.value = newValue;
+                                updateEstimatedPrice(vehicle, pickupLocation, dropLocation);
                             });
                         }
                     });

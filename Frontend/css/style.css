@@ -52,6 +52,11 @@ html {
     position: relative;
 }
 
+#decreaseButton:hover, #increaseButton:hover{
+    scale: 1.1;
+    cursor: pointer;
+}
+
 
 .form-overlay-container{
     height: 0px;
