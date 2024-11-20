@@ -36,19 +36,19 @@ function getVehicleType(vehicle) {
 // function to find the price per kg and price range based on the type of order
 function calculatePriceByWeight(distanceinfo, vehicleType, weightrange) {
     const pricingDelhiNCR = {
-        frozen: { "0-100": 20, "100-250": 15, "250-700": 6, "700-1000": 5, "1000+": 5 },
-        chiller: { "0-100": 0, "100-250": 0, "250-700": 0, "700-1000": 0, "1000+": 0 },
-        dry: { "0-100": 0, "100-250": 0, "250-700": 0, "700-1000": 0, "1000+": 0 },
+        frozen: { "0-100": 20, "100-250": 15, "250-700": 6, "700-1000": 5, "1000-8000": 5 },
+        chiller: { "0-100": 0, "100-250": 0, "250-700": 0, "700-1000": 0, "1000-8000": 0 },
+        dry: { "0-100": 0, "100-250": 0, "250-700": 0, "700-1000": 0, "1000-8000": 0 },
     };
     const pricingLessThan600Km = {
-        frozen: { "0-100": 45, "100-250": 40, "250-700": 35, "700-1000": 30, "1000+": 30 },
-        chiller: { "0-100": 0, "100-250": 0, "250-700": 0, "700-1000": 0, "1000+": 0 },
-        dry: { "0-100": 0, "100-250": 0, "250-700": 0, "700-1000": 0, "1000+": 0 },
+        frozen: { "0-100": 45, "100-250": 40, "250-700": 35, "700-1000": 30, "1000-8000": 30 },
+        chiller: { "0-100": 0, "100-250": 0, "250-700": 0, "700-1000": 0, "1000-8000": 0 },
+        dry: { "0-100": 0, "100-250": 0, "250-700": 0, "700-1000": 0, "1000-8000": 0 },
     };
     const pricingMoreThan600Km = {
-        frozen: { "0-100": 50, "100-250": 40, "250-700": 35, "700-1000": 25, "1000+": 20 },
-        chiller: { "0-100": 0, "100-250": 0, "250-700": 0, "700-1000": 0, "1000+": 0 },
-        dry: { "0-100": 0, "100-250": 0, "250-700": 0, "700-1000": 0, "1000+": 0 },
+        frozen: { "0-100": 50, "100-250": 40, "250-700": 35, "700-1000": 25, "1000-8000": 20 },
+        chiller: { "0-100": 0, "100-250": 0, "250-700": 0, "700-1000": 0, "1000-8000": 0 },
+        dry: { "0-100": 0, "100-250": 0, "250-700": 0, "700-1000": 0, "1000-8000": 0 },
     };
 
     const minMaxWeights = {
@@ -56,7 +56,7 @@ function calculatePriceByWeight(distanceinfo, vehicleType, weightrange) {
         "100-250": [100, 250],
         "250-700": [250, 700],
         "700-1000": [700, 1000],
-        "1000+": [1000, 100000],
+        "1000-8000": [1000, 8000],
     };
     const [minWeight, maxWeight] = minMaxWeights[weightrange];
 
@@ -65,7 +65,7 @@ function calculatePriceByWeight(distanceinfo, vehicleType, weightrange) {
     else if (weightrange == "100-250") weightCategory = "100-250";
     else if (weightrange == "250-700") weightCategory = "250-700";
     else if (weightrange == "700-1000") weightCategory = "700-1000";
-    else weightCategory = "1000+";
+    else weightCategory = "1000-8000";
 
     let pricePerKg = 0;
     if (distanceinfo == "inDelhiNCR") {
