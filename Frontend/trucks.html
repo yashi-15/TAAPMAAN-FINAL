@@ -16,7 +16,7 @@
         <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Rubik&display=swap" rel="stylesheet" />
 
         <script>
-            fetch("https://api.taapmaan.live/api/get-google-api-key")
+            fetch("http://localhost:3000/api/get-google-api-key")
                 .then((response) => response.json())
                 .then((data) => {
                     const apiKey = data.apiKey;
@@ -167,7 +167,7 @@
                     </div>
                     <div class="modal-body">
                         <!-- https://docs.google.com/forms/d/e/1FAIpQLSciUs5rnk0JtcReAfl8jeYXZmk-tINfyioYc-1Z3SVwCbk6kQ/viewform?usp=pp_url&entry.971733700=name&entry.338509281=phone&entry.1178663220=weight&entry.1400587036=price&entry.74539831=pickup&entry.1797661727=drop&entry.860171057=date&entry.1674096571=type+vehicle&entry.495744575=quantity+product&entry.860091518=type+product -->
-                        <form action="https://docs.google.com/forms/u/0/d/e/1FAIpQLSciUs5rnk0JtcReAfl8jeYXZmk-tINfyioYc-1Z3SVwCbk6kQ/formResponse" method="post" target="hidden_iframe3" onsubmit="return vehicleModalSubmit()">
+                        <form>
                             <div class="row justify-content-center align-items-center">
                                 <input id="yourName" name="entry.971733700" type="text" class="col-5 form-control p-3 m-2" placeholder="Name" />
                                 <input id="yourPhonenumber" name="entry.338509281" type="text" class="col-5 form-control p-3 m-2" placeholder="Phone No." />
@@ -197,7 +197,7 @@
                             </div>
                             <div class="modal-footer">
                                 <p id="success-contact-submit" class="text-center"></p>
-                                <button type="submit" class="btn btn-primary">Submit</button>
+                                <button type="submit" class="btn btn-primary" onclick="paymentStart(event)">Pay Now</button>
                             </div>
                         </form>
                     </div>
@@ -398,21 +398,36 @@
                 $("#vehicleModal").modal("show");
             }
 
-            function vehicleModalSubmit() {
-                const yourName = document.getElementById("yourName").value;
-                const yourPhonenum = document.getElementById("yourPhonenumber").value;
+            // function vehicleModalSubmit() {
+            //     const yourName = document.getElementById("yourName").value;
+            //     const yourPhonenum = document.getElementById("yourPhonenumber").value;
 
-                if (!yourName || !yourPhonenum) {
-                    document.getElementById("success-contact-submit").innerHTML = "Please fill all the details before proceeding!";
-                    return;
+            //     if (!yourName || !yourPhonenum) {
+            //         document.getElementById("success-contact-submit").innerHTML = "Please fill all the details before proceeding!";
+            //         return;
+            //     }
+
+            //     submitted = true;
+            //     return true;
+            // }
+        </script>
+        <script src="js/priceEstimation.js"></script>
+        <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+
+        <!-- Client-Side JavaScript -->
+        <script src="js/razorpayPayment.js">
+            window.onload = function () {
+                const urlParams = new URLSearchParams(window.location.search);
+                const paymentStatus = urlParams.get('paymentStatus');
+        
+                if (paymentStatus === 'success') {
+                    alert("Payment successfully completed!");
+                } else if (paymentStatus === 'failed') {
+                    alert("Payment failed! Please try again.");
                 }
-
-                submitted = true;
-                return true;
-            }
+            };
         </script>
 
-        <script src="js/priceEstimation.js"></script>
 
         <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
         <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>

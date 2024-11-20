@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const Razorpay = require("razorpay");
 require('dotenv').config();
 const cors = require('cors');
 
@@ -11,19 +12,20 @@ const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
-const allowedOrigins = ["http://148.135.136.178", "https://148.135.136.178", "http://taapmaan.live", "https://taapmaan.live"];
+// const allowedOrigins = ["http://148.135.136.178", "https://148.135.136.178", "http://taapmaan.live", "https://taapmaan.live"];
 // Allow requests from your frontend
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  methods: ["GET", "POST"],
-  credentials: true,
-}));
+// app.use(cors({
+//   origin: (origin, callback) => {
+//     if (!origin || allowedOrigins.includes(origin)) {
+//       callback(null, true);
+//     } else {
+//       callback(new Error("Not allowed by CORS"));
+//     }
+//   },
+//   methods: ["GET", "POST"],
+//   credentials: true,
+// }));
+app.use(cors());
 
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -41,6 +43,12 @@ const userSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model("User", userSchema);
+
+// Razorpay instance
+const razorpay = new Razorpay({
+  key_id: "rzp_live_BSOxL08MrkmXlw",
+  key_secret: "4CfR5zLwfn1G7CUwYRS1yds1",
+});
 
 // Routes
 app.get("/", (req, res) => {
@@ -105,6 +113,38 @@ app.post("/login", async (req, res) => {
     console.error("Error logging in user:", error);
     res.status(500).json({ message: "Error logging in. Please try again later." });
   }
+});
+
+// Route to create an order
+app.post("/createOrder", async (req, res) => {
+  try {
+      const { amount } = req.body;
+      console.log(`Creating order for amount: ${amount}`);
+      const options = {
+          amount: amount * 100, // Convert amount to paise
+          currency: "INR",
+          receipt: `receipt_${Date.now()}`,
+      };
+      const order = await razorpay.orders.create(options);
+      console.log("Order created successfully:", order);
+      res.json({ success: true, order });
+  } catch (error) {
+      console.error("Error creating order:", error);
+      res.status(500).json({ success: false, message: "Something went wrong!" });
+  }
+});
+
+// Route to update the payment status
+app.post("/updatePaymentStatus", (req, res) => {
+  const { paymentStatus, orderId } = req.body;
+
+  if (paymentStatus === "success") {
+      console.log(`Payment for order ${orderId} was successful.`);
+  } else if (paymentStatus === "failed") {
+      console.log(`Payment for order ${orderId} failed or was canceled.`);
+  }
+
+  res.json({ success: true, message: `Payment status updated to ${paymentStatus}` });
 });
 
 app.listen(port, () => {
