@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Receipt</title>
+</head>
+<body>
+    <h1>Payment Receipt</h1>
+    <div id="receipt"></div>
+
+    <script>
+        const receipt = JSON.parse(localStorage.getItem("paymentReceipt"));
+        if (receipt) {
+            document.getElementById("receipt").innerHTML = `
+                <p>Order ID: ${receipt.orderId}</p>
+                <p>Payment ID: ${receipt.paymentId}</p>
+                <p>UPI ID: ${receipt.upiId}</p>
+                <p>Amount Paid: ₹${receipt.amount}</p>
+                <p>User: ${receipt.user.name}</p>
+                <p>Email: ${receipt.user.email}</p>
+                <p>Phone: ${receipt.user.phone}</p>
+            `;
+        } else {
+            document.getElementById("receipt").innerHTML = "<p>No receipt found!</p>";
+        }
+    </script>
+</body>
+</html>

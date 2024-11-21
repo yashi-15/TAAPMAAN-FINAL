@@ -37,7 +37,7 @@ function getVehicleType(vehicle) {
 function calculatePriceByWeight(distanceinfo, vehicleType, weightrange) {
     const pricingDelhiNCR = {
         frozen: { "0-100": 20, "100-250": 15, "250-700": 6, "700-1000": 5, "1000-8000": 5 },
-        chiller: { "0-100": 0, "100-250": 0, "250-700": 0, "700-1000": 0, "1000-8000": 0 },
+        chiller: { "0-100": 1, "100-250": 0, "250-700": 0, "700-1000": 0, "1000-8000": 0 },
         dry: { "0-100": 0, "100-250": 0, "250-700": 0, "700-1000": 0, "1000-8000": 0 },
     };
     const pricingLessThan600Km = {

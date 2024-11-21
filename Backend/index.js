@@ -12,20 +12,20 @@ const port = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
-// const allowedOrigins = ["http://148.135.136.178", "https://148.135.136.178", "http://taapmaan.live", "https://taapmaan.live"];
+const allowedOrigins = ["http://148.135.136.178", "https://148.135.136.178", "http://taapmaan.live", "https://taapmaan.live"];
 // Allow requests from your frontend
-// app.use(cors({
-//   origin: (origin, callback) => {
-//     if (!origin || allowedOrigins.includes(origin)) {
-//       callback(null, true);
-//     } else {
-//       callback(new Error("Not allowed by CORS"));
-//     }
-//   },
-//   methods: ["GET", "POST"],
-//   credentials: true,
-// }));
-app.use(cors());
+app.use(cors({
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  methods: ["GET", "POST"],
+  credentials: true,
+}));
+// app.use(cors());
 
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
@@ -43,6 +43,24 @@ const userSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model("User", userSchema);
+
+// Define a schema for payment details
+const paymentSchema = new mongoose.Schema({
+  paymentId: String,
+  orderId: String,
+  status: String,
+  upiId: String,
+  user: {
+      name: String,
+      email: String,
+      phone: String,
+  },
+  amount: Number,
+  createdAt: { type: Date, default: Date.now },
+});
+
+// Create a model
+const Payment = mongoose.model("Payment", paymentSchema);
 
 // Razorpay instance
 const razorpay = new Razorpay({
@@ -134,17 +152,28 @@ app.post("/createOrder", async (req, res) => {
   }
 });
 
-// Route to update the payment status
-app.post("/updatePaymentStatus", (req, res) => {
-  const { paymentStatus, orderId } = req.body;
+// Route to update payment status
+app.post("/updatePaymentStatus", async (req, res) => {
+  const { paymentStatus, orderId, paymentId, upiId, user, amount } = req.body;
 
-  if (paymentStatus === "success") {
-      console.log(`Payment for order ${orderId} was successful.`);
-  } else if (paymentStatus === "failed") {
-      console.log(`Payment for order ${orderId} failed or was canceled.`);
+  try {
+      // Save payment details in MongoDB
+      const payment = new Payment({
+          paymentId,
+          orderId,
+          status: paymentStatus,
+          upiId,
+          user,
+          amount,
+      });
+      await payment.save();
+
+      console.log("Payment details saved successfully:", payment);
+      res.json({ success: true, message: `Payment status updated to ${paymentStatus}` });
+  } catch (error) {
+      console.error("Error saving payment details:", error);
+      res.status(500).json({ success: false, message: "Failed to save payment details." });
   }
-
-  res.json({ success: true, message: `Payment status updated to ${paymentStatus}` });
 });
 
 app.listen(port, () => {

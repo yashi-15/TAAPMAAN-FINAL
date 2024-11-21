@@ -689,7 +689,7 @@
         </script>
         <script>
             // Fetch the API key from the backend and dynamically load the script
-            fetch('http://localhost:3000/api/get-google-api-key')
+            fetch('https://api.taapmaan.live/api/get-google-api-key')
                 .then(response => response.json())
                 .then(data => {
                     const apiKey = data.apiKey;

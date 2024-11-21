@@ -13,7 +13,7 @@ async function paymentStart(event) {
     }
 
     try {
-        const response = await fetch("http://localhost:3000/createOrder", {
+        const response = await fetch("https://api.taapmaan.live/createOrder", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
@@ -35,19 +35,38 @@ async function paymentStart(event) {
             description: "Test Transaction",
             order_id: data.order.id,
             handler: function (response) {
-                fetch("http://localhost:3000/updatePaymentStatus", {
+                const user = JSON.parse(localStorage.getItem("userDetails"));
+            
+                fetch("https://api.taapmaan.live/updatePaymentStatus", {
                     method: "POST",
                     headers: {
                         "Content-Type": "application/json",
                     },
-                    body: JSON.stringify({ paymentStatus: "success", orderId: data.order.id }),
+                    body: JSON.stringify({
+                        paymentStatus: "success",
+                        orderId: data.order.id,
+                        paymentId: response.razorpay_payment_id,
+                        upiId: response.razorpay_upi_id,
+                        user,
+                        amount: data.order.amount / 100,
+                    }),
                 })
                     .then(() => {
-                        alert("Payment successfully completed!");
-                        window.location.href = "index.html?paymentStatus=success";
+                        // Save payment details in localStorage for receipt generation
+                        localStorage.setItem("paymentReceipt", JSON.stringify({
+                            orderId: data.order.id,
+                            paymentId: response.razorpay_payment_id,
+                            upiId: response.razorpay_upi_id,
+                            user,
+                            amount: data.order.amount / 100,
+                        }));
+            
+                        // Redirect to receipt page
+                        window.location.href = "receipt.html";
                     })
                     .catch((err) => console.error("Error updating payment status:", err));
             },
+            
             prefill: {
                 name: "John Doe",
                 email: "john.doe@example.com",
@@ -62,7 +81,7 @@ async function paymentStart(event) {
         rzp.on("payment.failed", function (response) {
             alert("Payment Unsuccessful!");
 
-            fetch("http://localhost:3000/updatePaymentStatus", {
+            fetch("https://api.taapmaan.live/updatePaymentStatus", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
