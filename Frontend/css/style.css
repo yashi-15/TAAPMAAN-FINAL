@@ -265,7 +265,7 @@ h6,
     
 }
 
-@media (max-width: 400px) {
+@media only screen and (max-width: 400px) {
      .about_stats_card h4{
         font-size: 18px;
      }
@@ -277,6 +277,12 @@ h6,
     }
     .team-item div p{
         font-size: 12px;
+    }
+    .vehicle-box p{
+        font-size: 9px !important;
+    }
+    .vehicle-box img{
+        width: 25px !important;
     }
     
 }
@@ -505,12 +511,20 @@ body {
 
 .vehicle-box.selected,
 .vehicle-box:hover {
-    background-color: #ddeff9;
+    background-color: #d5f0ff;
+    border: 2px solid var(--secondary) !important;
+    scale: 0.95;
 }
 .vehicle-box {
     width: 140px;
     height: 120px;
     cursor: pointer;
+}
+.vehicle-box p{
+    font-size: 13px;
+}
+.vehicle-box img{
+    width: 40px;
 }
 
 /* media queries  */
@@ -563,6 +577,9 @@ body {
     }
     .vehicle-box p{
         font-size: 10px;
+    }
+    .vehicle-box img{
+        width: 30px;
     }
     label{
         font-size: 12px;

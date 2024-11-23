@@ -187,20 +187,23 @@
                                     </div>
                                     <div class="col-xl-6 px-1 px-sm-2">
                                         <div class="vehicle-selection d-flex align-items-center justify-content-center">
-                                            <div class="vehicle-box border d-flex flex-column align-items-center justify-content-center p-1 m-1 p-sm-2 m-sm-2" data-value="Frozen">
-                                                <img src="img/Frozen.png" width="40px" />
+                                            <div class="vehicle-box border d-flex flex-column align-items-center justify-content-center p-1 m-1 p-sm-2 m-sm-2 selected" data-value="Frozen">
+                                                <img src="img/frozen2.png" />
+                                                <!-- <img src="img/Frozen.png" width="40px" /> -->
                                                 <p class="text-dark font-weight-bold mb-0">Frozen</p>
-                                                <p class="text-dark mt-0">0°C to -25°C</p>
+                                                <p class="text-dark my-0">0°C to -25°C</p>
                                             </div>
                                             <div class="vehicle-box border d-flex flex-column align-items-center justify-content-center p-1 m-1 p-sm-2 m-sm-2" data-value="Chiller">
-                                                <img src="img/Chiller.png" width="35px" />
+                                                <img src="img/chiller2.png" />
+                                                <!-- <img src="img/Chiller.png" width="35px" /> -->
                                                 <p class="text-dark font-weight-bold mb-0">Chiller</p>
-                                                <p class="text-dark mt-0">0°C to 25°C</p>
+                                                <p class="text-dark my-0">0°C to 25°C</p>
                                             </div>
                                             <div class="vehicle-box border d-flex flex-column align-items-center justify-content-center p-1 m-1 p-sm-2 m-sm-2" data-value="Dry">
-                                                <img src="img/Dry.png" width="40px" />
+                                                <img src="img/dry2.png" />
+                                                <!-- <img src="img/Dry.png" width="40px" /> -->
                                                 <p class="text-dark font-weight-bold mb-0">Dry</p>
-                                                <p class="text-dark mt-0">25°C and above</p>
+                                                <p class="text-dark my-0">25°C and above</p>
                                             </div>
                                             <input type="hidden" id="selected-vehicle" name="entry.2143236161" value="" />
                                         </div>
@@ -670,19 +673,22 @@
             // Get all the vehicle boxes
             const vehicleBoxes = document.querySelectorAll(".vehicle-box");
             const hiddenInput = document.getElementById("selected-vehicle");
-
+        
+            // Set "Frozen" as the default selected vehicle
+            hiddenInput.value = "Frozen";
+        
             vehicleBoxes.forEach((box) => {
                 box.addEventListener("click", function () {
                     // Remove the 'selected' class from all boxes
                     vehicleBoxes.forEach((box) => box.classList.remove("selected"));
-
+        
                     // Add the 'selected' class to the clicked box
                     this.classList.add("selected");
-
+        
                     // Set the value of the hidden input to the selected vehicle's data-value
                     const selectedVehicle = this.getAttribute("data-value");
                     hiddenInput.value = selectedVehicle;
-
+        
                     console.log("Selected vehicle:", selectedVehicle);
                 });
             });
