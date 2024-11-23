@@ -378,24 +378,30 @@
         </script>
         <script>
             function populateVehicleModal() {
-                // Get the values from the form
-                const pickupLocation = document.getElementById("pickup-location").value;
-                const dropLocation = document.getElementById("drop-location").value;
-                const pickupDate = document.getElementById("pickup-date").value;
-                const selectedProduct = document.getElementById("selected-vehicle").value;
-                const productQuantity = document.getElementById("quantity-product").value;
-                const productType = document.getElementById("type-product").value;
+                const storedUser = JSON.parse(localStorage.getItem("user"));
+                if (storedUser) {
+                    // Get the values from the form
+                    const pickupLocation = document.getElementById("pickup-location").value;
+                    const dropLocation = document.getElementById("drop-location").value;
+                    const pickupDate = document.getElementById("pickup-date").value;
+                    const selectedProduct = document.getElementById("selected-vehicle").value;
+                    const productQuantity = document.getElementById("quantity-product").value;
+                    const productType = document.getElementById("type-product").value;
 
-                // Set the values in the modal
-                document.getElementById("modal-pickup-location").value = pickupLocation;
-                document.getElementById("modal-drop-location").value = dropLocation;
-                document.getElementById("modal-pickup-date").value = pickupDate;
-                document.getElementById("modal-selected-vehicle").value = selectedProduct;
-                document.getElementById("modal-quantity-product").value = productQuantity;
-                document.getElementById("modal-type-product").value = productType;
+                    // Set the values in the modal
+                    document.getElementById("modal-pickup-location").value = pickupLocation;
+                    document.getElementById("modal-drop-location").value = dropLocation;
+                    document.getElementById("modal-pickup-date").value = pickupDate;
+                    document.getElementById("modal-selected-vehicle").value = selectedProduct;
+                    document.getElementById("modal-quantity-product").value = productQuantity;
+                    document.getElementById("modal-type-product").value = productType;
 
-                // Programmatically open the modal
-                $("#vehicleModal").modal("show");
+                    // Programmatically open the modal
+                    $("#vehicleModal").modal("show");
+                }
+                else{
+                    alert("Please log in to view exact pricing and book your truck.");
+                }
             }
 
             // function vehicleModalSubmit() {
